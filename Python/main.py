@@ -12,13 +12,13 @@ def A_2():
     X : np.array = np.fft.fft(x)
     X_win : np.array = np.fft.fft(x * M)
     X_mag_dB : np.array = 100 * np.log10(np.abs(X) * np.abs(X))
-    X_mag_dB_window : np.array = 100 * np.log10(np.abs(X_win) * np.abs(X_win))
-
-    From_Python_To_C_Array.array_to_txt(np.blackman(768), 768, "Blackman" )
+    k_max = np.argmax(X_mag_dB[:N//2])
+    #X_mag_dB_window : np.array = 100 * np.log10(np.abs(X_win) * np.abs(X_win))
 
     plt.figure()
     plt.plot(n, X_mag_dB, label="Sans fenêtrage")
-    plt.plot(n, X_mag_dB_window, label="Avec fenêtrage Blackman")
+    #plt.plot(n, X_mag_dB_window, label="Avec fenêtrage Blackman")
+    plt.axvline(x=k_max, color='red', linestyle='--', label=f'k = {k_max}')
     plt.grid()
     plt.xlabel("Fréquence [k]")
     plt.ylabel("Amplitude [dB]")

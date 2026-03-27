@@ -248,7 +248,7 @@ int main(void) {
                 
                 // Calculate value in Hz of frequency with highest power 
                 // *** POINT A4: maxAmplFreq = ...
-
+                maxAmplFreq = maxN * Fe / FFT_LEN;
                 // Show frequency with highest power on 7 segment display, max-out at 4 digits (9999)
                 numberInto4DigitString(maxAmplFreq, freqDigits);
                 SSD_WriteDigits(freqDigits[3], freqDigits[2], freqDigits[1], freqDigits[0], 0, 0, 0, 0);
