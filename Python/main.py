@@ -8,7 +8,7 @@ def A_2():
     N : int = 1024
     n : np.array = np.arange(N)
     M : np.array = np.blackman(N)
-    x : np.array = np.sin(2 * np.pi * 400 * n / fe)
+    x : np.array = np.sin(2 * np.pi * 440 * n / fe)
     X : np.array = np.fft.fft(x)
     X_win : np.array = np.fft.fft(x * M)
     X_mag_dB : np.array = 100 * np.log10(np.abs(X) * np.abs(X))
@@ -22,7 +22,7 @@ def A_2():
     plt.grid()
     plt.xlabel("Fréquence [k]")
     plt.ylabel("Amplitude [dB]")
-    plt.title("Graphique de |X[k]|^2 du spectre d'un sinus d'entrée de 400 Hz")
+    plt.title("Graphique de |X[k]|^2 du spectre d'un sinus d'entrée de 440 Hz")
     plt.legend()
     plt.show()
 

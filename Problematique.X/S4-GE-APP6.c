@@ -224,7 +224,7 @@ int main(void) {
                 //      loss of resolution with an arithmetic shift by the difference of bits between
                 //      the two: ">> (H_and_W_QXY_RES_NBITS - LOG2FFTLEN"
                 for (n = 0; n < SIG_LEN; n++) {
-                    inFFT[n].re = (previousInBuffer[n] * window_blackman[n]) >> (H_and_W_QXY_RES_NBITS - LOG2FFTLEN);
+                    inFFT[n].re = (previousInBuffer[n] * window[n]) >> (H_and_W_QXY_RES_NBITS - LOG2FFTLEN);
                     inFFT[n].im = 0;
                 }
                 for (; n < FFT_LEN; n++) {
