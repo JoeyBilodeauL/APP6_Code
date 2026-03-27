@@ -89,6 +89,7 @@ void buildH(const int32c *, const int32c *, const int32c *, const int32c *, cons
 void numberInto4DigitString(int, char *);
 bool switchStateChanged(bool *, bool *, bool *, bool *, bool *, bool *, bool *, bool *);
 unsigned char SWT_GetValue_Local(unsigned char);
+void calc_fft(int32c *inbuf, int32c *outbuf, int32c *twiddles, int32c *scratch, int log2N);
 
 int main(void) {
     // Static declarations allow variables to be visible in debugger at all times
@@ -232,7 +233,7 @@ int main(void) {
                 }
                 
                 // *** POINT A2: calculate frequency spectrum components X[k] with PIC32 DSP Library FFT function call
-                calc_fft();
+                calc_fft(inFFT, outFFT, twiddles, Scratch, LOG2FFTLEN);
                 // Calculate power spectrum
                 //calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
 
@@ -318,9 +319,9 @@ int main(void) {
     return -1;
 }
 
-void calc_fft()
+void calc_fft(int32c *inbuf, int32c *outbuf, int32c *twiddles, int32c *scratch, int log2N)
 {
-    
+    mips_fft32(outbuf, inbuf, twiddles, scratch, log2N);
 }
 
 //
@@ -346,9 +347,16 @@ void calc_fft()
 //
 
 void calc_power_spectrum(int32c *inbuf, int32_t *outbuf, int n) {
-    double re, im;
+    double re, im, gain = 100;
 
     // *** POINT A3: Complete the calc_power_spectrum() function
+    int k;
+    for (k = 0; k < n; k++)
+    {
+        re = inbuf[k].re;
+        im = inbuf[k].im;
+        outbuf[k] = gain * log10((re*re + im*im) + 1);
+    }
 }
 
 
