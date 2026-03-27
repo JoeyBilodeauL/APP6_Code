@@ -232,9 +232,9 @@ int main(void) {
                 }
                 
                 // *** POINT A2: calculate frequency spectrum components X[k] with PIC32 DSP Library FFT function call
-
+                calc_fft();
                 // Calculate power spectrum
-                calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
+                //calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
 
                 // Find index of frequency with highest power (positive frequency spectrum only)
                 maxVal = -1;
@@ -318,6 +318,10 @@ int main(void) {
     return -1;
 }
 
+void calc_fft()
+{
+    
+}
 
 //
 // Calculation of log power spectrum: log(|X[k]|^2)
