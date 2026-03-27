@@ -123,7 +123,7 @@ int main(void) {
 
     // Calculate spectral resolution, use (double) type casting for parameters
     // *** POINT A1: spectralResolution =...
-
+    spectralResolution = (double) Fe / (double)SIG_LEN;
     // MX3 peripherals hardware initializations
     BTN_Init();
     LCD_Init();
@@ -224,7 +224,7 @@ int main(void) {
                 //      loss of resolution with an arithmetic shift by the difference of bits between
                 //      the two: ">> (H_and_W_QXY_RES_NBITS - LOG2FFTLEN"
                 for (n = 0; n < SIG_LEN; n++) {
-                    inFFT[n].re = (previousInBuffer[n] * window[n]) >> (H_and_W_QXY_RES_NBITS - LOG2FFTLEN);
+                    inFFT[n].re = (previousInBuffer[n] * window_blackman[n]) >> (H_and_W_QXY_RES_NBITS - LOG2FFTLEN);
                     inFFT[n].im = 0;
                 }
                 for (; n < FFT_LEN; n++) {
@@ -235,7 +235,7 @@ int main(void) {
                 // *** POINT A2: calculate frequency spectrum components X[k] with PIC32 DSP Library FFT function call
                 calc_fft(inFFT, outFFT, twiddles, Scratch, LOG2FFTLEN);
                 // Calculate power spectrum
-                //calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
+                calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
 
                 // Find index of frequency with highest power (positive frequency spectrum only)
                 maxVal = -1;
