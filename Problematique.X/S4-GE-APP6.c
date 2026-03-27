@@ -231,7 +231,6 @@ int main(void) {
                     inFFT[n].re = 0;
                     inFFT[n].im = 0;
                 }
-                
                 // *** POINT A2: calculate frequency spectrum components X[k] with PIC32 DSP Library FFT function call
                 calc_fft(inFFT, outFFT, twiddles, Scratch, LOG2FFTLEN);
                 // Calculate power spectrum
@@ -275,7 +274,16 @@ int main(void) {
                 if (switchStateChange) {
                     buildH(H7, H6, H5, H4, H3, Htot, FFT_LEN);
                 }
-
+                for (n = 0; n < H_LEN; n++)
+                {
+                    inFFT[n].re = (currentInBuffer[H_LEN * 2 + n] * FFT_LEN);
+                    inFFT[n].im = 0;
+                }
+                for (n = 0; n < SIG_LEN; n++)
+                {
+                    inFFT[n + H_LEN].re = (previousInBuffer[n] * FFT_LEN);
+                    inFFT[n + H_LEN].im = 0;
+                }
                 // *** POINT B0: Load inFFT buffer with 4 blocks of input samples of length H_LEN
                 //     for FFT calculation (explicitely set imaginary components to 0):
                 //       1) Last block from the previous input buffer pointed to by "currentInBuffer".
@@ -289,7 +297,8 @@ int main(void) {
                 //                decreases resolution of X[k] result.
 
                 // *** POINT B1: Calculate X[k] with PIC32 DSP Library FFT function call
-
+                calc_fft(inFFT, outFFT, twiddles, Scratch, LOG2FFTLEN);
+                //calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
                 // *** POINT B2: Frequency domain FIR Filtering
 
                 // *** POINT B3: Inverse FFT by forward FFT library function call, no need to divide by N
