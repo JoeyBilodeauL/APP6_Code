@@ -301,11 +301,19 @@ int main(void) {
                 calc_fft(inFFT, outFFT, twiddles, Scratch, LOG2FFTLEN);
                 // *** POINT B2: Frequency domain FIR Filtering
                 filter_signal(outFFT, Htot, FFT_LEN);
-                calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
+                //calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
                 // *** POINT B3: Inverse FFT by forward FFT library function call, no need to divide by N
-
+                for (n = 0; n < FFT_LEN; n ++)
+                {
+                    outFFT[n].im = -outFFT[n].im;
+                    inFFT[n] = outFFT[n];
+                }
+                calc_fft(inFFT, outFFT, twiddles, Scratch, LOG2FFTLEN);
                 // *** POINT B4: Extract three blocks from the iFFT result, take real part, remove H QX.Y scaling.
-
+                for (n = 0; n < FFT_LEN; n ++)
+                {
+                    outBuffer1[n] = outFFT[n+H_LEN].re;
+                }
                 // If required, update LCD display with SW7-SW3 switch states
                 if (switchStateChange) {
                     sprintf(LCDBuf, "H7:%s H6:%s H5:%s", (SWT_GetValue_Local(7) ? "+" : "-"),
