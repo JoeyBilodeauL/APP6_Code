@@ -84,6 +84,7 @@ static int32_t inBuffer1[SIG_LEN], inBuffer2[SIG_LEN], outBuffer1[SIG_LEN], outB
 static int32c inFFT[FFT_LEN], outFFT[FFT_LEN], Htot[FFT_LEN], twiddles[FFT_LEN / 2];
 
 // Local function prototyping
+void filter_signal(int32c *inbuf, int32c *hFilter, int N);
 void calc_power_spectrum(int32c *, int32_t *, int);
 void buildH(const int32c *, const int32c *, const int32c *, const int32c *, const int32c *, int32c *, int);
 void numberInto4DigitString(int, char *);
@@ -298,9 +299,9 @@ int main(void) {
 
                 // *** POINT B1: Calculate X[k] with PIC32 DSP Library FFT function call
                 calc_fft(inFFT, outFFT, twiddles, Scratch, LOG2FFTLEN);
-                //calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
                 // *** POINT B2: Frequency domain FIR Filtering
-
+                filter_signal(outFFT, Htot, FFT_LEN);
+                calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
                 // *** POINT B3: Inverse FFT by forward FFT library function call, no need to divide by N
 
                 // *** POINT B4: Extract three blocks from the iFFT result, take real part, remove H QX.Y scaling.
@@ -326,6 +327,17 @@ int main(void) {
     } // while(1))
 
     return -1;
+}
+void filter_signal(int32c *inbuf, int32c *hFilter, int N)
+{
+    int k;
+    int32c temp;
+    for (k = 0; k < N; k++)
+    {
+        temp.re = (inbuf[k].re * hFilter[k].re - inbuf[k].im * hFilter[k].im) >> 13;
+        temp.im = (inbuf[k].re * hFilter[k].im + inbuf[k].im * hFilter[k].re) >> 13;
+        inbuf[k] = temp;
+    }
 }
 
 void calc_fft(int32c *inbuf, int32c *outbuf, int32c *twiddles, int32c *scratch, int log2N)
