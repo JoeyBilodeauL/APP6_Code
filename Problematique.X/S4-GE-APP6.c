@@ -79,7 +79,7 @@ bool inputBufferFull, IIREnabled;
 
 // Though this is BAD PROGRAMMING PRACTICE, define these arrays as
 // static (private) global variables for the MPLAB DMCI plug-in to see them
-static int32_t inBuffer1[SIG_LEN], inBuffer2[SIG_LEN], outBuffer1[SIG_LEN], outBuffer2[SIG_LEN],
+static int32_t inBuffer1[SIG_LEN], inBuffer2[SIG_LEN], outBuffer1[SIG_LEN], outBuffer2[SIG_LEN], 
         debugBuffer1[FFT_LEN], debugBuffer2[FFT_LEN], Fe;
 static int32c inFFT[FFT_LEN], outFFT[FFT_LEN], Htot[FFT_LEN], twiddles[FFT_LEN / 2];
 
@@ -124,7 +124,7 @@ int main(void) {
 
     // Calculate spectral resolution, use (double) type casting for parameters
     // *** POINT A1: spectralResolution =...
-    spectralResolution = (double) Fe / (double)SIG_LEN;
+    spectralResolution = (double) Fe / (double)FFT_LEN;
     // MX3 peripherals hardware initializations
     BTN_Init();
     LCD_Init();
@@ -302,6 +302,7 @@ int main(void) {
                 // *** POINT B2: Frequency domain FIR Filtering
                 filter_signal(outFFT, Htot, FFT_LEN);
                 //calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
+                calc_power_spectrum(Htot, debugBuffer1, FFT_LEN);
                 // *** POINT B3: Inverse FFT by forward FFT library function call, no need to divide by N
                 for (n = 0; n < FFT_LEN; n ++)
                 {
@@ -310,9 +311,9 @@ int main(void) {
                 }
                 calc_fft(inFFT, outFFT, twiddles, Scratch, LOG2FFTLEN);
                 // *** POINT B4: Extract three blocks from the iFFT result, take real part, remove H QX.Y scaling.
-                for (n = 0; n < FFT_LEN; n ++)
+                for (n = H_LEN; n < FFT_LEN; n ++)
                 {
-                    outBuffer1[n] = outFFT[n+H_LEN].re;
+                    previousOutBuffer[n-H_LEN] = outFFT[n].re;
                 }
                 // If required, update LCD display with SW7-SW3 switch states
                 if (switchStateChange) {
