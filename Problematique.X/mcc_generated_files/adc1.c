@@ -122,7 +122,7 @@ void ADC1_ChannelSelect( ADC1_CHANNEL channel )
 void __ISR ( _ADC_VECTOR, IPL1AUTO ) ADC_1 (void)
 {
    int x, y, nSOS;
-    
+   int v, u;
     // Read A/D input (ALWAYS, otherwise program hangs)
     x = ADC1BUF0;
 
@@ -135,12 +135,12 @@ void __ISR ( _ADC_VECTOR, IPL1AUTO ) ADC_1 (void)
          for (nSOS = 0; nSOS < N_SOS_SECTIONS; nSOS++) {
             // *** POINT C1
             
-			// y[n] = 
-			
+			//y[n] = 
+            y = (int32_t)(((int64_t)IIRCoeffs[nSOS][0] * x + IIRv[nSOS]) >> 13); 
 			// v[n] = 
-			
+			IIRv[nSOS] = (int32_t)((int64_t)IIRCoeffs[nSOS][1] * x - (int64_t)IIRCoeffs[nSOS][4] * y + IIRu[nSOS]);
 			// u[n] = 
-            
+            IIRu[nSOS] = (int32_t)((int64_t)IIRCoeffs[nSOS][2] * x - (int64_t)IIRCoeffs[nSOS][5] * y);
             // Update the input for the next SOS section
             x = y;
         }

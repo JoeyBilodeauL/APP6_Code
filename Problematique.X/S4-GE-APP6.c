@@ -302,7 +302,7 @@ int main(void) {
                 // *** POINT B2: Frequency domain FIR Filtering
                 filter_signal(outFFT, Htot, FFT_LEN);
                 //calc_power_spectrum(outFFT, debugBuffer1, FFT_LEN);
-                calc_power_spectrum(Htot, debugBuffer1, FFT_LEN);
+                //calc_power_spectrum(Htot, debugBuffer1, FFT_LEN);
                 // *** POINT B3: Inverse FFT by forward FFT library function call, no need to divide by N
                 for (n = 0; n < FFT_LEN; n ++)
                 {
@@ -314,6 +314,7 @@ int main(void) {
                 for (n = H_LEN; n < FFT_LEN; n ++)
                 {
                     previousOutBuffer[n-H_LEN] = outFFT[n].re;
+                    debugBuffer1[n-H_LEN] = outFFT[n].re;
                 }
                 // If required, update LCD display with SW7-SW3 switch states
                 if (switchStateChange) {

@@ -11,17 +11,17 @@ def A_2():
     x : np.array = np.sin(2 * np.pi * 440 * n / fe)
     X : np.array = np.fft.fft(x)
     X_win : np.array = np.fft.fft(x * M)
-    X_mag_dB : np.array = 100 * np.log10(np.abs(X) * np.abs(X))
+    X_mag_dB : np.array = 10 * np.log10(np.abs(X) * np.abs(X))
     k_max = np.argmax(X_mag_dB[:N//2])
     X_mag_dB_window : np.array = 100 * np.log10(np.abs(X_win) * np.abs(X_win))
 
     plt.figure()
     plt.plot(n, X_mag_dB, label="Sans fenêtrage")
-    plt.plot(n, X_mag_dB_window, label="Avec fenêtrage Blackman")
-    #plt.axvline(x=k_max, color='red', linestyle='--', label=f'k = {k_max}')
+    #plt.plot(n, X_mag_dB_window, label="Avec fenêtrage Blackman")
+    plt.axvline(x=k_max, color='red', linestyle='--', label=f'k = {k_max}')
     plt.grid()
     plt.xlabel("Fréquence [k]")
-    plt.ylabel("Puissance [dB]")
+    plt.ylabel("Amplitude [dB]")
     plt.title("Graphique de |X[k]|^2 du spectre d'un sinus d'entrée de 440 Hz")
     plt.legend()
     plt.show()
@@ -31,25 +31,27 @@ def B_1():
     N : int = 1024
     n : np.array = np.arange(N)
     M : np.array = np.blackman(N)
-    x : np.array = np.sin(2 * np.pi * 1000 * n / fe)
+    x : np.array = np.sin(2 * np.pi * 400 * n / fe)
     h : np.array = signal.firwin(256,500, window='blackman', fs=fe)
     H : np.array = np.fft.fft(h, n=N)
     X : np.array = np.fft.fft(x)
-    X_mag_dB : np.array = 100 * np.log10(np.abs(X) * np.abs(X))
+    X_mag_dB : np.array = 10 * np.log10(np.abs(X) * np.abs(X))
     Y : np.array = X * H
-    Y_mag_dB : np.array = 100 * np.log10(np.abs(Y) * np.abs(Y) + 1)
+    Y_mag_dB : np.array = 10 * np.log10(np.abs(Y) * np.abs(Y))
     y : np.array = np.fft.ifft(Y)
 
 
     plt.figure()
     plt.grid()
     plt.xlabel("Fréquence [k]")
-    #plt.ylabel("Puissance [dB]")
+    #plt.ylabel("Amplitude [dB]")
     #plt.title("Graphique de la puissance du spectre d'un sinus de 400 Hz de grandeur 4N")
     #plt.plot(n, X_mag_dB)
-    plt.ylabel("Puissance [dB]")
-    plt.title("Graphique de la puissance du spectre de Y[k]")
-    plt.plot(n[256:], np.real(y)[256:])
+    plt.ylabel("Amplitude")
+    plt.title("Sinus de 400 Hz en entrée et en sortie du filtre H7")
+    plt.plot(n[256:], np.real(y)[256:], label="Sinus de sortie")
+    plt.plot(n[256:], x[256:], label="Sinus d'entrée")
+    plt.legend(loc='lower right')
     plt.show()
 
 def filtre_FIR():
@@ -84,7 +86,6 @@ def filtre_FIR():
     H_tot : np.array = np.fft.fft(h_tot, n=N)
     H_tot_mag_dB : np.array = 20 * np.log10(np.abs(H_tot))
 
-
     plt.figure()
 
     plt.subplot(2,1,1)
@@ -109,7 +110,20 @@ def filtre_FIR():
     plt.show()
 
 def filtre_IIR():
-    print("bonjour")
+    N : int = 1024
+    n : np.array = np.arange(N)
+    fe = 20000
+
+    filter_order = 4
+
+    sos = signal.ellip(filter_order, 1, 120, [940, 1060], btype='bandstop', output='sos', fs=fe)
+    [f_sos, h] = signal.sosfreqz(sos, fs=fe)
+
+    plt.figure()
+    plt.semilogx(f_sos, 20 * np.log10(np.abs(h)))
+    plt.grid()
+
+    From_Python_To_C_Array.array_to_txt(sos, 24, "IIR_sos")
 
 def get_filter_transfer_function(N : int, numtaps : int, cutoff , type : str, window : str, fe : int):
     h_fir : np.array = signal.firwin(numtaps=numtaps, cutoff=cutoff, pass_zero=f"{type}", window=f"{window}", fs=fe)
@@ -117,4 +131,4 @@ def get_filter_transfer_function(N : int, numtaps : int, cutoff , type : str, wi
     return H_fir
 
 if __name__ == "__main__":
-    filtre_FIR()
+    B_1()
